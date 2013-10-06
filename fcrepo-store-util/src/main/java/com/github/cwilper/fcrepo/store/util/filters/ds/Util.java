@@ -61,6 +61,36 @@ class Util {
         }
     }
 
+    static long computeSize(String info, String pid, Datastream ds,
+            DatastreamVersion dsv, ContentResolver contentResolver,
+            String localFedoraServer) throws IOException {
+        try {
+            if (ds.controlGroup() == ControlGroup.INLINE_XML) {
+                if (!dsv.inlineXML().canonical()) {
+                    try {
+                        XMLUtil.canonicalize(dsv.inlineXML().bytes());
+                    } catch (IOException e) {
+                        logger.warn("Unable to canonicalize {} using C14N11;"
+                                + " using non-standard method ("
+                                + e.getCause().getMessage() + ")", info);
+                    }
+                }
+                return dsv.inlineXML().bytes().length;
+            } else if (ds.controlGroup() == ControlGroup.MANAGED) {
+                return CommandContext.getSource().getContentLength(pid,
+                        ds.id(), dsv.id());
+            } else {
+                String location = dsv.contentLocation().toString();
+                location = location.replace("local.fedora.server",
+                        localFedoraServer);
+                return computeSize(contentResolver.resolveContent(null,
+                        URI.create(location)));
+            }
+        } catch (StoreException e) {
+            throw new IOException(e);
+        }
+    }
+
     static String[] computeFixity(InputStream inputStream,
             String algorithm) throws IOException {
         try {
@@ -72,7 +102,7 @@ class Util {
                 size += count;
                 digest.update(buffer, 0, count);
             }
-            return new String[] { "" + size, hexString(digest.digest()) };
+            return new String[] { Long.toString(size), hexString(digest.digest()) };
         } catch (NoSuchAlgorithmException e) {
             throw new IOException(e);
         } finally {
@@ -80,12 +110,12 @@ class Util {
         }
     }
 
-    static final String HEXES = "0123456789abcdef";
+    static final char[] HEXES = "0123456789abcdef".toCharArray();
     static String hexString(byte[] bytes) {
         StringBuilder hex = new StringBuilder(2 * bytes.length);
         for (byte b : bytes) {
-            hex.append(HEXES.charAt((b & 0xF0) >> 4))
-                    .append(HEXES.charAt((b & 0x0F)));
+            hex.append(HEXES[((b & 0xF0) >> 4)])
+                    .append(HEXES[(b & 0x0F)]);
         }
         return hex.toString();
     }

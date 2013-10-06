@@ -52,9 +52,9 @@ public class SetFixity extends MultiVersionFilter {
                         .hexValue(result[1]));
                 logger.debug("Set {} {}=" + result[1], info, algorithm);
             } else if (dsv.size() == null) {
-                dsv.size(Util.computeSize(Util.getInputStream(info,
+                dsv.size(Util.computeSize(info,
                         object.pid(), ds, dsv, contentResolver,
-                        localFedoraServer)));
+                        localFedoraServer));
                 logger.debug("Set {} size=" + dsv.size(), info);
             }
         } catch (IOException e) {
