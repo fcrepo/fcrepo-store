@@ -7,8 +7,16 @@ import java.util.Map;
  * Memory-based implementation of {@link PathRegistry}.
  */
 public class MemoryPathRegistry implements PathRegistry {
-    private final Map<String, String> map = new HashMap<String, String>();
+    private final Map<String, String> map;
 
+    public MemoryPathRegistry() {
+        this(16);
+    }
+    
+    public MemoryPathRegistry(int initialCapacity) {
+        map = new HashMap<String, String>(initialCapacity);
+    }
+    
     @Override
     public long getPathCount() {
         return map.size();

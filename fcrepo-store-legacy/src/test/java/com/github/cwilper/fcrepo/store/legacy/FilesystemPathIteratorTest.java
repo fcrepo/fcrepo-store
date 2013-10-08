@@ -30,11 +30,17 @@ public class FilesystemPathIteratorTest {
         emptyDir.mkdir();
         nonEmptyDir = new File(tempDir, "nonEmptyDir");
         nonEmptyDir.mkdir();
+        touch(new File(nonEmptyDir, "file1"));
+        touch(new File(nonEmptyDir, "file2"));
+        touch(new File(new File(nonEmptyDir, "file3"), "file1"));
+        touch(new File(nonEmptyDir, "file4"));
+        touch(new File(tempDir, "pfile"));
+    }
+    
+    private static void touch(File file) throws Exception {
         OutputStream out;
-        out = new FileOutputStream(new File(nonEmptyDir, "file1"));
-        IOUtils.write(new byte[] { 0 }, out);
-        out.close();
-        out = new FileOutputStream(new File(nonEmptyDir, "file2"));
+        file.getParentFile().mkdirs();
+        out = new FileOutputStream(file);
         IOUtils.write(new byte[] { 0 }, out);
         out.close();
     }
@@ -42,15 +48,18 @@ public class FilesystemPathIteratorTest {
     @Test
     public void iterateAll() {
         Set<String> paths = toSet(new FilesystemPathIterator(tempDir));
-        Assert.assertEquals(2, paths.size());
+        Assert.assertEquals(5, paths.size());
         Assert.assertTrue(paths.contains("nonEmptyDir/file1"));
         Assert.assertTrue(paths.contains("nonEmptyDir/file2"));
+        Assert.assertTrue(paths.contains("nonEmptyDir/file3/file1"));
+        Assert.assertTrue(paths.contains("nonEmptyDir/file4"));
+        Assert.assertTrue(paths.contains("pfile"));
     }
 
     @Test
     public void iterateNonEmpty() {
         Set<String> paths = toSet(new FilesystemPathIterator(nonEmptyDir));
-        Assert.assertEquals(2, paths.size());
+        Assert.assertEquals(4, paths.size());
         Assert.assertTrue(paths.contains("file1"));
         Assert.assertTrue(paths.contains("file2"));
     }

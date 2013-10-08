@@ -9,6 +9,7 @@ import java.io.File;
  * returned by the iterator are relative to the given base directory.
  */
 class FilesystemPathIterator extends AbstractIterator<String> {
+    private static final String[] EMPTY = new String[0];
     private final File baseDir;
 
     private DirectoryNode currentDir;
@@ -28,7 +29,7 @@ class FilesystemPathIterator extends AbstractIterator<String> {
         while (currentDir != null) {
             DirectoryNode child = currentDir.nextChild();
             if (child == null) {
-                currentDir = currentDir.parent;
+                currentDir = currentDir.removeParent();
             } else if (child.isDirectory()) {
                 currentDir = child;
             } else {
@@ -39,7 +40,7 @@ class FilesystemPathIterator extends AbstractIterator<String> {
     }
 
     private class DirectoryNode {
-        final DirectoryNode parent;
+        DirectoryNode parent;
         final String path;
 
         private String[] childPaths;
@@ -63,13 +64,14 @@ class FilesystemPathIterator extends AbstractIterator<String> {
             }
             File[] childFiles = dir.listFiles();
             childPaths = new String[childFiles.length];
+            StringBuilder childPath = new StringBuilder(path);
             for (int i = 0; i < childFiles.length; i++) {
-                StringBuilder childPath = new StringBuilder(path);
                 childPath.append(childFiles[i].getName());
                 if (childFiles[i].isDirectory()) {
                     childPath.append("/");
                 }
                 childPaths[i] = childPath.toString();
+                childPath.setLength(path.length());
             }
         }
 
@@ -80,6 +82,9 @@ class FilesystemPathIterator extends AbstractIterator<String> {
         DirectoryNode nextChild() {
             if (isDirectory()) {
                 if (childNum == childPaths.length) {
+                    // cut the array loose
+                    childNum = 0;
+                    childPaths = EMPTY;
                     return null; // no more children
                 } else {
                     return new DirectoryNode(this, childPaths[childNum++]);
@@ -87,6 +92,16 @@ class FilesystemPathIterator extends AbstractIterator<String> {
             } else {
                 return null; // not a directory
             }
+        }
+        
+        /**
+         * pop off the parent DirectoryNode we've saved to continue iterating a level up
+         * @return
+         */
+        DirectoryNode removeParent() {
+            DirectoryNode result = parent;
+            parent = null;
+            return result;
         }
     }
 }
