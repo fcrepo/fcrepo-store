@@ -33,7 +33,7 @@ class Util {
 
     static InputStream getInputStream(String info, String pid, Datastream ds,
             DatastreamVersion dsv, ContentResolver contentResolver,
-            String localFedoraServer) throws IOException {
+            String localFedoraServer, CommandContext context) throws IOException {
         try {
             if (ds.controlGroup() == ControlGroup.INLINE_XML) {
                 if (!dsv.inlineXML().canonical()) {
@@ -47,7 +47,7 @@ class Util {
                 }
                 return new ByteArrayInputStream(dsv.inlineXML().bytes());
             } else if (ds.controlGroup() == ControlGroup.MANAGED) {
-                return CommandContext.getSource().getContent(pid,
+                return context.getSource().getContent(pid,
                         ds.id(), dsv.id());
             } else {
                 String location = dsv.contentLocation().toString();
@@ -63,7 +63,7 @@ class Util {
 
     static long computeSize(String info, String pid, Datastream ds,
             DatastreamVersion dsv, ContentResolver contentResolver,
-            String localFedoraServer) throws IOException {
+            String localFedoraServer, CommandContext context) throws IOException {
         try {
             if (ds.controlGroup() == ControlGroup.INLINE_XML) {
                 if (!dsv.inlineXML().canonical()) {
@@ -77,7 +77,7 @@ class Util {
                 }
                 return dsv.inlineXML().bytes().length;
             } else if (ds.controlGroup() == ControlGroup.MANAGED) {
-                return CommandContext.getSource().getContentLength(pid,
+                return context.getSource().getContentLength(pid,
                         ds.id(), dsv.id());
             } else {
                 String location = dsv.contentLocation().toString();

@@ -8,7 +8,8 @@ import com.github.cwilper.fcrepo.dto.core.FedoraObject;
 import com.github.cwilper.fcrepo.store.core.FedoraStoreSession;
 import com.github.cwilper.fcrepo.store.core.StoreException;
 import com.github.cwilper.fcrepo.store.util.commands.CommandContext;
-import com.github.cwilper.ttff.AbstractFilter;
+import com.github.cwilper.fcrepo.store.util.filters.AbstractFilter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +27,13 @@ public class InlineToManagedXML extends AbstractFilter<Datastream> {
             LoggerFactory.getLogger(InlineToManagedXML.class);
 
     @Override
-    public Datastream accept(Datastream datastream) throws IOException {
-        FedoraStoreSession destination = CommandContext.getDestination();
+    public Datastream accept(Datastream datastream, CommandContext context) throws IOException {
+        FedoraStoreSession destination = context.getDestination();
         if (destination == null) {
             throw new UnsupportedOperationException("Filter requires content "
                     + "write access, but this is a read-only command");
         }
-        FedoraObject object = CommandContext.getObject();
+        FedoraObject object = context.getObject();
         try {
             if (datastream.controlGroup() == ControlGroup.INLINE_XML) {
                 datastream.controlGroup(ControlGroup.MANAGED);
@@ -41,7 +42,7 @@ public class InlineToManagedXML extends AbstractFilter<Datastream> {
                         datastream.id());
                 for (DatastreamVersion datastreamVersion :
                         datastream.versions()) {
-                    handleVersion(object, datastream, datastreamVersion);
+                    handleVersion(object, datastream, datastreamVersion, context);
                 }
             }
         } catch (StoreException e) {
@@ -51,9 +52,9 @@ public class InlineToManagedXML extends AbstractFilter<Datastream> {
     }
 
     private void handleVersion(FedoraObject object, Datastream datastream,
-            DatastreamVersion datastreamVersion) throws IOException {
+            DatastreamVersion datastreamVersion, CommandContext context) throws IOException {
         byte[] bytes = datastreamVersion.inlineXML().bytes();
-        CommandContext.getDestination().setContent(object.pid(),
+        context.getDestination().setContent(object.pid(),
                 datastream.id(), datastreamVersion.id(),
                 new ByteArrayInputStream(bytes));
         datastreamVersion.inlineXML(null);

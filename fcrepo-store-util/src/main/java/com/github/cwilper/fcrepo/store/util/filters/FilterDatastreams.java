@@ -3,8 +3,6 @@ package com.github.cwilper.fcrepo.store.util.filters;
 import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
 import com.github.cwilper.fcrepo.store.util.commands.CommandContext;
-import com.github.cwilper.ttff.AbstractFilter;
-import com.github.cwilper.ttff.Filter;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -22,12 +20,12 @@ public class FilterDatastreams extends AbstractFilter<FedoraObject> {
     }
 
     @Override
-    public FedoraObject accept(FedoraObject object) throws IOException {
-        CommandContext.setObject(object); // make available to filter
+    public FedoraObject accept(FedoraObject object, CommandContext context) throws IOException {
+        CommandContext localContext = context.copyFor(object); // make available to filter
         Iterator<Datastream> iterator = object.datastreams().values().iterator();
         Set<Datastream> updatedDatastreams = new HashSet<Datastream>();
         while (iterator.hasNext()) {
-            Datastream result = filter.accept(iterator.next());
+            Datastream result = filter.accept(iterator.next(), localContext);
             if (result == null) {
                 iterator.remove();
             } else {

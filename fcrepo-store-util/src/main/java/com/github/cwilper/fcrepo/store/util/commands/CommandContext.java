@@ -7,39 +7,64 @@ import com.github.cwilper.fcrepo.store.core.FedoraStoreSession;
  * Provides {@link ThreadLocal} data relevant to the currently-executing
  * {@link Command}.
  */
-public final class CommandContext {
-    private static final ThreadLocal<FedoraStoreSession> tSource =
-            new ThreadLocal<FedoraStoreSession>();
+public class CommandContext {
+    private FedoraStoreSession tSource;
 
-    private static final ThreadLocal<FedoraStoreSession> tDestination =
-            new ThreadLocal<FedoraStoreSession>();
+    private FedoraStoreSession tDestination;
 
-    private static final ThreadLocal<FedoraObject> tObject =
-            new ThreadLocal<FedoraObject>();
+    private FedoraObject tObject;
     
-    private CommandContext() { }
-
-    public static void setSource(FedoraStoreSession source) {
-        tSource.set(source);
+    public CommandContext(FedoraStoreSession source,
+            FedoraStoreSession destination, FedoraObject object) {
+        tSource = source;
+        tDestination = destination;
+        tObject = object;
     }
 
-    public static FedoraStoreSession getSource() {
-        return tSource.get();
+    public void setSource(FedoraStoreSession source) {
+        tSource = source;
     }
 
-    public static void setDestination(FedoraStoreSession destination) {
-        tDestination.set(destination);
+    public FedoraStoreSession getSource() {
+        return tSource;
     }
 
-    public static FedoraStoreSession getDestination() {
-        return tDestination.get();
+    public void setDestination(FedoraStoreSession destination) {
+        tDestination = destination;
     }
 
-    public static void setObject(FedoraObject object) {
-        tObject.set(object);
+    public FedoraStoreSession getDestination() {
+        return tDestination;
     }
 
-    public static FedoraObject getObject() {
-        return tObject.get();
+    public void setObject(FedoraObject object) {
+        tObject = object;
+    }
+
+    public FedoraObject getObject() {
+        return tObject;
+    }
+    
+    public CommandContext copyFor(FedoraObject object) {
+        return new CommandContext(tSource, tDestination, object);
+    }
+    
+    public static CommandContext nonModifiableContext(
+            FedoraStoreSession source, FedoraStoreSession destination,
+            FedoraObject object) {
+        return new CommandContext(source, destination, object) {
+            @Override
+            public void setSource(FedoraStoreSession object) {
+                throw new UnsupportedOperationException("Cannot modify this CommandContext");
+            }
+            @Override
+            public void setDestination(FedoraStoreSession object) {
+                throw new UnsupportedOperationException("Cannot modify this CommandContext");
+            }
+            @Override
+            public void setObject(FedoraObject object) {
+                throw new UnsupportedOperationException("Cannot modify this CommandContext");
+            }
+        };
     }
 }

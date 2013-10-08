@@ -7,10 +7,10 @@
   <bean id="set-fixity"
       class="com.github.cwilper.fcrepo.store.util.filters.FilterDatastreams">
     <constructor-arg>
-      <bean class="com.github.cwilper.ttff.Filters" factory-method="or">
+      <bean class="com.github.cwilper.fcrepo.store.util.filters.Filters" factory-method="or">
         <constructor-arg>
           <list>
-            <bean class="com.github.cwilper.ttff.Filters" factory-method="and">
+            <bean class="com.github.cwilper.fcrepo.store.util.filters.Filters" factory-method="and">
               <constructor-arg>
                 <list>
                   <bean class="com.github.cwilper.fcrepo.store.util.filters.ds.IfIdMatches">

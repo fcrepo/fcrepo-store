@@ -5,7 +5,7 @@ import com.github.cwilper.fcrepo.dto.core.DatastreamVersion;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
 import com.github.cwilper.fcrepo.store.core.StoreException;
 import com.github.cwilper.fcrepo.store.util.commands.CommandContext;
-import com.github.cwilper.ttff.AbstractFilter;
+import com.github.cwilper.fcrepo.store.util.filters.AbstractFilter;
 
 import java.io.IOException;
 
@@ -21,15 +21,15 @@ public abstract class MultiVersionFilter extends AbstractFilter<Datastream> {
     }
 
     @Override
-    public Datastream accept(Datastream datastream) throws IOException {
-        FedoraObject object = CommandContext.getObject();
+    public Datastream accept(Datastream datastream, CommandContext context) throws IOException {
+        FedoraObject object = context.getObject();
         try {
             if (allDatastreamVersions) {
                 for (DatastreamVersion datastreamVersion : datastream.versions()) {
-                    handleVersion(object, datastream, datastreamVersion);
+                    handleVersion(object, datastream, datastreamVersion, context);
                 }
             } else {
-                handleVersion(object, datastream, datastream.versions().first());
+                handleVersion(object, datastream, datastream.versions().first(), context);
             }
         } catch (StoreException e) {
             throw new IOException(e);
@@ -38,6 +38,7 @@ public abstract class MultiVersionFilter extends AbstractFilter<Datastream> {
     }
     
     protected abstract void handleVersion(FedoraObject object,
-            Datastream datastream, DatastreamVersion datastreamVersion)
+            Datastream datastream, DatastreamVersion datastreamVersion,
+            CommandContext context)
             throws IOException;
 }

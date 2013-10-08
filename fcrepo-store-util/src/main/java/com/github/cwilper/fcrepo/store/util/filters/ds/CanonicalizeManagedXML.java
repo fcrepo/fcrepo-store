@@ -30,8 +30,8 @@ public class CanonicalizeManagedXML extends MultiVersionFilter {
     
     @Override
     protected void handleVersion(FedoraObject object, Datastream ds,
-            DatastreamVersion dsv) throws IOException {
-        FedoraStoreSession destination = CommandContext.getDestination();
+            DatastreamVersion dsv, CommandContext context) throws IOException {
+        FedoraStoreSession destination = context.getDestination();
         if (destination == null) {
             throw new UnsupportedOperationException("Filter requires content "
                     + "write access, but this is a read-only command");
@@ -39,7 +39,7 @@ public class CanonicalizeManagedXML extends MultiVersionFilter {
         String info = object.pid() + "/" + ds.id() + "/" + dsv.id();
         if (ds.controlGroup() == ControlGroup.MANAGED
                 && Util.isXML(dsv.mimeType())) {
-            InputStream inputStream = CommandContext.getSource().getContent(
+            InputStream inputStream = context.getSource().getContent(
                     object.pid(), ds.id(), dsv.id());
             byte[] cBytes;
             try {

@@ -9,7 +9,7 @@ import com.github.cwilper.fcrepo.store.core.FedoraStore;
 import com.github.cwilper.fcrepo.store.core.FedoraStoreSession;
 import com.github.cwilper.fcrepo.store.core.NotFoundException;
 import com.github.cwilper.fcrepo.store.util.IdSpec;
-import com.github.cwilper.ttff.Filter;
+import com.github.cwilper.fcrepo.store.util.filters.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +29,11 @@ public class CopyCommand extends FilteringBatchObjectCommand {
     public CopyCommand(FedoraStore source, FedoraStore destination,
             IdSpec pids, Filter<FedoraObject> filter, boolean withContent,
             boolean overwrite) {
-        super(source.getSession(), pids, filter);
-        this.destination = destination.getSession();
+        super(source.getSession(), destination.getSession(),
+                pids, filter);
+        this.destination = this.factoryContext.getDestination();
         this.withContent = withContent;
         this.overwrite = overwrite;
-        CommandContext.setDestination(this.destination);
     }
     
     @Override

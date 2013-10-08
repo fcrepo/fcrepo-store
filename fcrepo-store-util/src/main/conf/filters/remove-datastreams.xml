@@ -7,7 +7,7 @@
   <bean id="remove-datastreams"
       class="com.github.cwilper.fcrepo.store.util.filters.FilterDatastreams">
     <constructor-arg>
-      <bean class="com.github.cwilper.ttff.Filters" factory-method="not">
+      <bean class="com.github.cwilper.fcrepo.store.util.filters.Filters" factory-method="not">
         <constructor-arg>
           <bean class="com.github.cwilper.fcrepo.store.util.filters.ds.IfIdMatches">
             <constructor-arg value="${remove-datastream-ids}"/>

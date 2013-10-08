@@ -3,7 +3,8 @@ package com.github.cwilper.fcrepo.store.util.commands;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
 import com.github.cwilper.fcrepo.store.core.FedoraStoreSession;
 import com.github.cwilper.fcrepo.store.util.IdSpec;
-import com.github.cwilper.ttff.Filter;
+import com.github.cwilper.fcrepo.store.util.filters.Filter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,19 +19,27 @@ public abstract class FilteringBatchObjectCommand
             LoggerFactory.getLogger(FilteringBatchObjectCommand.class);
     protected final Filter<FedoraObject> filter;
 
+    protected final CommandContext factoryContext;
+    
     public FilteringBatchObjectCommand(FedoraStoreSession source,
+            IdSpec pids, Filter<FedoraObject> filter) {
+        this(source, null, pids, filter);
+    }
+    
+    protected FilteringBatchObjectCommand(
+            FedoraStoreSession source, FedoraStoreSession destination,
             IdSpec pids, Filter<FedoraObject> filter) {
         super(source, pids);
         this.filter = filter;
-        CommandContext.setSource(source);
-        CommandContext.setDestination(source);
+        this.factoryContext =
+                CommandContext.nonModifiableContext(source, destination, null);
     }
 
     @Override
     public void handleObject(FedoraObject object) {
         String pid = object.pid();
         try {
-            object = filter.accept(object);
+            object = filter.accept(object, factoryContext.copyFor(object));
             if (object == null) {
                 logger.debug("Skipped {} (filtered out)", pid);
             } else {

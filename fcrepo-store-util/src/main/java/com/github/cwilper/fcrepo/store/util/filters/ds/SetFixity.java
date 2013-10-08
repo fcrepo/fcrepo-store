@@ -5,6 +5,8 @@ import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.DatastreamVersion;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
 import com.github.cwilper.fcrepo.dto.core.io.ContentResolver;
+import com.github.cwilper.fcrepo.store.util.commands.CommandContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +37,14 @@ public class SetFixity extends MultiVersionFilter {
 
     @Override
     protected void handleVersion(FedoraObject object, Datastream ds,
-            DatastreamVersion dsv) {
+            DatastreamVersion dsv, CommandContext context) {
         String info = object.pid() + "/" + ds.id() + "/" + dsv.id();
         String[] result = null;
         try {
             if (dsv.contentDigest() == null || force) {
                 result = Util.computeFixity(Util.getInputStream(
                         info, object.pid(), ds,
-                        dsv, contentResolver, localFedoraServer), algorithm);
+                        dsv, contentResolver, localFedoraServer, context), algorithm);
                 if (force || dsv.size() == null) {
                     dsv.size(Long.valueOf(result[0]));
                     logger.debug("Set {} size=" + result[0], info);
@@ -54,7 +56,7 @@ public class SetFixity extends MultiVersionFilter {
             } else if (dsv.size() == null) {
                 dsv.size(Util.computeSize(info,
                         object.pid(), ds, dsv, contentResolver,
-                        localFedoraServer));
+                        localFedoraServer, context));
                 logger.debug("Set {} size=" + dsv.size(), info);
             }
         } catch (IOException e) {

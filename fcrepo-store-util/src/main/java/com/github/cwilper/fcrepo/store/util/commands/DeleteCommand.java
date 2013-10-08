@@ -3,7 +3,7 @@ package com.github.cwilper.fcrepo.store.util.commands;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
 import com.github.cwilper.fcrepo.store.core.FedoraStore;
 import com.github.cwilper.fcrepo.store.util.IdSpec;
-import com.github.cwilper.ttff.Filter;
+import com.github.cwilper.fcrepo.store.util.filters.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

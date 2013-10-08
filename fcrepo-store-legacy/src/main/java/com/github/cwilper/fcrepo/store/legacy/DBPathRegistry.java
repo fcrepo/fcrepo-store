@@ -10,6 +10,7 @@ import java.util.List;
  * Database-backed {@link PathRegistry} implementation.
  */
 public class DBPathRegistry implements PathRegistry {
+    private static final String ARG_REGEX = "\\?";
     private static final String CREATE_TABLE_DDL =
             "CREATE TABLE ? (\n"
             + "id VARCHAR(256) PRIMARY KEY NOT NULL,\n"
@@ -27,6 +28,12 @@ public class DBPathRegistry implements PathRegistry {
     private static final String DELETE_ALL_SQL =
             "DELETE FROM ?";
     
+    private final String select_count_sql;
+    private final String select_path_sql;
+    private final String insert_path_sql;
+    private final String update_path_sql;
+    private final String delete_by_id_sql;
+    private final String delete_all_sql;
 
     private final JdbcTemplate db;
     private final String table;
@@ -43,6 +50,12 @@ public class DBPathRegistry implements PathRegistry {
         if (db == null || table == null) throw new NullPointerException();
         this.db = db;
         this.table = table;
+        select_count_sql = SELECT_COUNT_SQL.replace("?", table);
+        select_path_sql = SELECT_PATH_SQL.replaceFirst(ARG_REGEX, table);
+        insert_path_sql = INSERT_PATH_SQL.replaceFirst(ARG_REGEX, table);
+        update_path_sql = UPDATE_PATH_SQL.replaceFirst(ARG_REGEX, table);
+        delete_by_id_sql = DELETE_BY_ID_SQL.replaceFirst(ARG_REGEX, table);
+        delete_all_sql = DELETE_ALL_SQL.replace("?", table);
         createTableIfNeeded();
     }
 
@@ -64,7 +77,7 @@ public class DBPathRegistry implements PathRegistry {
      */
     public void clear() {
         try {
-            db.update(DELETE_ALL_SQL.replace("?", table));
+            db.update(delete_all_sql);
         } catch (DataAccessException e) {
             throw new StoreException("Error clearing table", e);
         }
@@ -73,8 +86,7 @@ public class DBPathRegistry implements PathRegistry {
     @Override
     public long getPathCount() {
         try {
-            return db.queryForLong(
-                    SELECT_COUNT_SQL.replaceFirst("\\?", table));
+            return db.queryForLong(select_count_sql);
         } catch (DataAccessException e) {
             throw new StoreException("Error getting path count", e);
         }
@@ -84,7 +96,7 @@ public class DBPathRegistry implements PathRegistry {
     public String getPath(String id) {
         try {
             List<String> result = db.queryForList(
-                    SELECT_PATH_SQL.replaceFirst("\\?", table),
+                    select_path_sql,
                     new String[] { id }, String.class);
             if (result.size() == 0) return null;
             return result.get(0);
@@ -98,14 +110,14 @@ public class DBPathRegistry implements PathRegistry {
         boolean exists = getPath(id) != null;
         try {
             if (!exists && path != null) {
-                db.update(INSERT_PATH_SQL.replaceFirst("\\?", table),
+                db.update(insert_path_sql,
                         id, path);
             } else if (exists) {
                 if (path != null) {
-                    db.update(UPDATE_PATH_SQL.replaceFirst("\\?", table),
+                    db.update(update_path_sql,
                             path, id);
                 } else {
-                    db.update(DELETE_BY_ID_SQL.replaceFirst("\\?", table),
+                    db.update(delete_by_id_sql,
                             id);
                 }
             }

@@ -4,6 +4,8 @@ import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.DatastreamVersion;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
 import com.github.cwilper.fcrepo.dto.core.io.ContentResolver;
+import com.github.cwilper.fcrepo.store.util.commands.CommandContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,14 +32,14 @@ public class CheckFixity extends MultiVersionFilter {
 
     @Override
     protected void handleVersion(FedoraObject object, Datastream ds,
-            DatastreamVersion dsv) {
+            DatastreamVersion dsv, CommandContext context) {
         String info = object.pid() + "/" + ds.id() + "/" + dsv.id();
         if (dsv.contentDigest() != null || dsv.size() != null) {
             try {
                 // some fixity info exists, so compute and compare
                 InputStream inputStream = Util.getInputStream(info,
                         object.pid(), ds, dsv, contentResolver,
-                        localFedoraServer);
+                        localFedoraServer, context);
                 String[] result;
                 if (dsv.contentDigest() != null) {
                     result = Util.computeFixity(inputStream,

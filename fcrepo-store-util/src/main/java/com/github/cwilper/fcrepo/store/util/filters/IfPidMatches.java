@@ -2,14 +2,13 @@ package com.github.cwilper.fcrepo.store.util.filters;
 
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
 import com.github.cwilper.fcrepo.store.util.IdSpec;
-import com.github.cwilper.ttff.AbstractFilter;
 
 import java.io.IOException;
 
 /**
  * Accepts objects whose pids match a given {@link IdSpec}.
  */
-public class IfPidMatches extends AbstractFilter<FedoraObject> {
+public class IfPidMatches extends NonMutatingFilter<FedoraObject> {
     private final IdSpec pids;
 
     public IfPidMatches(IdSpec pids) {
@@ -17,10 +16,7 @@ public class IfPidMatches extends AbstractFilter<FedoraObject> {
     }
 
     @Override
-    public FedoraObject accept(FedoraObject object) throws IOException {
-        if (pids.matches(object.pid())) {
-            return object;
-        }
-        return null;
+    public boolean accepts(FedoraObject object, FedoraObject duplicate) throws IOException {
+        return pids.matches(object.pid());
     }
 }
