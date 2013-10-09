@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-lazy-init="true">
+  <description><![CDATA[
+    Command: verify-copy
+
+    Purpose:
+      Copy objects from one store to another, with or without managed
+      datastream content. The specified filter may modify or omit objects
+      along the way.
+
+    Usage:
+      > fcsu verify-copy <source> <destination> [options]
+
+    Arguments:
+            <source>   the source store id.
+
+       <destination>   the destination store id.
+
+    Options:
+              --pids   a list of pids (comma-separated), or the path of a file
+                       that contains a list of pids (one per line), or 'all'.
+                       Default is 'all'.
+
+            --filter   non-mutating object filter to use. Default is 'unfiltered'.
+
+    Examples:
+      Verify all objects were copied from 'legacy' to 'akubra':
+
+        > fcsu verify-copy legacy akubra
+
+      Verify two specific objects were copied from 'legacy' to 'akubra':
+
+        > fcsu verify-copy legacy akubra --pids=demo:Obj1,demo:Obj2
+  ]]>
+  </description>
+  <bean id="copy"
+      class="com.github.cwilper.fcrepo.store.util.commands.CopyCommand">
+    <constructor-arg ref="${arg1}"/>
+    <constructor-arg ref="${arg2}"/>
+    <constructor-arg>
+      <bean class="com.github.cwilper.fcrepo.store.util.IdSpec">
+        <constructor-arg value="${pids}"/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="${filter}"/>
+    <constructor-arg ref="set-fixity"/>
+  </bean>
+</beans>
