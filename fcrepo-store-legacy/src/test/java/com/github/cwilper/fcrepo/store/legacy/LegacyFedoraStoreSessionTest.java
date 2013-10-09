@@ -1,5 +1,7 @@
 package com.github.cwilper.fcrepo.store.legacy;
 
+import static org.mockito.Mockito.mock;
+
 import com.github.cwilper.fcrepo.dto.core.ControlGroup;
 import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.DatastreamVersion;
@@ -11,7 +13,6 @@ import com.github.cwilper.fcrepo.dto.foxml.FOXMLWriter;
 import com.github.cwilper.fcrepo.store.core.ExistsException;
 import com.github.cwilper.fcrepo.store.core.NotFoundException;
 import org.apache.commons.io.IOUtils;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,32 +53,32 @@ public class LegacyFedoraStoreSessionTest {
     @Test (expected=NullPointerException.class)
     public void initWithNullObjectStore() {
         new LegacyFedoraStoreSession(null,
-                EasyMock.createMock(FileStore.class),
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+                mock(FileStore.class),
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullContentStore() {
-        new LegacyFedoraStoreSession(EasyMock.createMock(FileStore.class),
+        new LegacyFedoraStoreSession(mock(FileStore.class),
                 null,
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullReaderFactory() {
-        new LegacyFedoraStoreSession(EasyMock.createMock(FileStore.class),
-                EasyMock.createMock(FileStore.class),
+        new LegacyFedoraStoreSession(mock(FileStore.class),
+                mock(FileStore.class),
                 null,
-                EasyMock.createMock(DTOWriter.class));
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullWriterFactory() {
-        new LegacyFedoraStoreSession(EasyMock.createMock(FileStore.class),
-                EasyMock.createMock(FileStore.class),
-                EasyMock.createMock(DTOReader.class),
+        new LegacyFedoraStoreSession(mock(FileStore.class),
+                mock(FileStore.class),
+                mock(DTOReader.class),
                 null);
     }
 

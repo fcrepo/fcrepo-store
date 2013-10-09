@@ -1,5 +1,7 @@
 package com.github.cwilper.fcrepo.store.akubra;
 
+import static org.mockito.Mockito.mock;
+
 import com.github.cwilper.fcrepo.dto.core.ControlGroup;
 import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.DatastreamVersion;
@@ -15,7 +17,6 @@ import org.akubraproject.BlobStore;
 import org.akubraproject.BlobStoreConnection;
 import org.akubraproject.mem.MemBlobStore;
 import org.apache.commons.io.IOUtils;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,32 +57,32 @@ public class AkubraFedoraStoreSessionTest {
     @Test (expected=NullPointerException.class)
     public void initWithNullObjectStore() {
         new AkubraFedoraStoreSession(null,
-                EasyMock.createMock(BlobStore.class),
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+                mock(BlobStore.class),
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullContentStore() {
-        new AkubraFedoraStoreSession(EasyMock.createMock(BlobStore.class),
+        new AkubraFedoraStoreSession(mock(BlobStore.class),
                 null,
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullReaderFactory() {
-        new AkubraFedoraStoreSession(EasyMock.createMock(BlobStore.class),
-                EasyMock.createMock(BlobStore.class),
+        new AkubraFedoraStoreSession(mock(BlobStore.class),
+                mock(BlobStore.class),
                 null,
-                EasyMock.createMock(DTOWriter.class));
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullWriterFactory() {
-        new AkubraFedoraStoreSession(EasyMock.createMock(BlobStore.class),
-                EasyMock.createMock(BlobStore.class),
-                EasyMock.createMock(DTOReader.class),
+        new AkubraFedoraStoreSession(mock(BlobStore.class),
+                mock(BlobStore.class),
+                mock(DTOReader.class),
                 null);
     }
 

@@ -1,11 +1,14 @@
 package com.github.cwilper.fcrepo.store.jcr;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.github.cwilper.fcrepo.dto.core.io.DTOReader;
 import com.github.cwilper.fcrepo.dto.core.io.DTOWriter;
 import com.github.cwilper.fcrepo.dto.foxml.FOXMLReader;
 import com.github.cwilper.fcrepo.dto.foxml.FOXMLWriter;
 import com.github.cwilper.fcrepo.store.core.FedoraStore;
-import org.easymock.EasyMock;
 import org.junit.Test;
 
 import javax.jcr.Credentials;
@@ -18,44 +21,43 @@ import javax.jcr.Session;
 public class JCRFedoraStoreTest {
     @Test (expected=NullPointerException.class)
     public void initWithNullRepository() throws Exception {
-        new JCRFedoraStore(null, EasyMock.createMock(Credentials.class),
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+        new JCRFedoraStore(null, mock(Credentials.class),
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullCredentials() throws Exception {
-        new JCRFedoraStore(EasyMock.createMock(Repository.class), null,
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+        new JCRFedoraStore(mock(Repository.class), null,
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullReaderFactory() throws Exception {
-        new JCRFedoraStore(EasyMock.createMock(Repository.class),
-                EasyMock.createMock(Credentials.class),
+        new JCRFedoraStore(mock(Repository.class),
+                mock(Credentials.class),
                 null,
-                EasyMock.createMock(DTOWriter.class));
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullWriterFactory() throws Exception {
-        new JCRFedoraStore(EasyMock.createMock(Repository.class),
-                EasyMock.createMock(Credentials.class),
-                EasyMock.createMock(DTOReader.class),
+        new JCRFedoraStore(mock(Repository.class),
+                mock(Credentials.class),
+                mock(DTOReader.class),
                 null);
     }
     
     @Test
     public void getSession() throws Exception {
-        Repository repository = EasyMock.createMock(Repository.class);
-        Credentials credentials = EasyMock.createMock(Credentials.class);
-        Session session = EasyMock.createMock(Session.class);
-        EasyMock.expect(repository.login(credentials)).andReturn(session);
-        EasyMock.replay(repository);
+        Repository repository = mock(Repository.class);
+        Credentials credentials = mock(Credentials.class);
+        Session session = mock(Session.class);
+        when(repository.login(credentials)).thenReturn(session);
         FedoraStore store = new JCRFedoraStore(repository, credentials,
                 new FOXMLReader(), new FOXMLWriter());
         store.getSession().close();
-        EasyMock.verify(repository);
+        verify(repository).login(credentials);
     }
 }

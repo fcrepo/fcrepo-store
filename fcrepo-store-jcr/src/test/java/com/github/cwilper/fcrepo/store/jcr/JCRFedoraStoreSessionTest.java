@@ -1,5 +1,7 @@
 package com.github.cwilper.fcrepo.store.jcr;
 
+import static org.mockito.Mockito.mock;
+
 import com.github.cwilper.fcrepo.dto.core.ControlGroup;
 import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.DatastreamVersion;
@@ -13,7 +15,6 @@ import com.github.cwilper.fcrepo.store.core.NotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.core.TransientRepository;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -83,20 +84,20 @@ public class JCRFedoraStoreSessionTest {
     @Test (expected=NullPointerException.class)
     public void initWithNullSession() {
         new JCRFedoraStoreSession(null,
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullReaderFactory() {
-        new JCRFedoraStoreSession(EasyMock.createMock(Session.class),
-                null, EasyMock.createMock(DTOWriter.class));
+        new JCRFedoraStoreSession(mock(Session.class),
+                null, mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullWriterFactory() {
-        new JCRFedoraStoreSession(EasyMock.createMock(Session.class),
-                EasyMock.createMock(DTOReader.class), null);
+        new JCRFedoraStoreSession(mock(Session.class),
+                mock(DTOReader.class), null);
     }
 
     @Test (expected=NullPointerException.class)

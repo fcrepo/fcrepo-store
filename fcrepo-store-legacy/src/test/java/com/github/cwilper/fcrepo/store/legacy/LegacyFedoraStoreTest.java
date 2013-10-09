@@ -1,11 +1,12 @@
 package com.github.cwilper.fcrepo.store.legacy;
 
+import static org.mockito.Mockito.mock;
+
 import com.github.cwilper.fcrepo.dto.core.io.DTOReader;
 import com.github.cwilper.fcrepo.dto.core.io.DTOWriter;
 import com.github.cwilper.fcrepo.dto.foxml.FOXMLReader;
 import com.github.cwilper.fcrepo.dto.foxml.FOXMLWriter;
 import com.github.cwilper.fcrepo.store.core.FedoraStore;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,32 +27,32 @@ public class LegacyFedoraStoreTest {
     @Test(expected=NullPointerException.class)
     public void initWithNullObjectStore() {
         new LegacyFedoraStore(null,
-                EasyMock.createMock(FileStore.class),
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+                mock(FileStore.class),
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullContentStore() {
-        new LegacyFedoraStore(EasyMock.createMock(FileStore.class),
+        new LegacyFedoraStore(mock(FileStore.class),
                 null,
-                EasyMock.createMock(DTOReader.class),
-                EasyMock.createMock(DTOWriter.class));
+                mock(DTOReader.class),
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullReaderFactory() {
-        new LegacyFedoraStore(EasyMock.createMock(FileStore.class),
-                EasyMock.createMock(FileStore.class),
+        new LegacyFedoraStore(mock(FileStore.class),
+                mock(FileStore.class),
                 null,
-                EasyMock.createMock(DTOWriter.class));
+                mock(DTOWriter.class));
     }
 
     @Test (expected=NullPointerException.class)
     public void initWithNullWriterFactory() {
-        new LegacyFedoraStore(EasyMock.createMock(FileStore.class),
-                EasyMock.createMock(FileStore.class),
-                EasyMock.createMock(DTOReader.class),
+        new LegacyFedoraStore(mock(FileStore.class),
+                mock(FileStore.class),
+                mock(DTOReader.class),
                 null);
     }
     
