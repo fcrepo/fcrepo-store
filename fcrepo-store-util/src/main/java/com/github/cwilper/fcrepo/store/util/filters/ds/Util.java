@@ -21,7 +21,7 @@ import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-class Util {
+public class Util {
     private static final Logger logger = LoggerFactory.getLogger(Util.class);
 
     private Util() { }
@@ -110,14 +110,34 @@ class Util {
         }
     }
 
-    static final char[] HEXES = "0123456789abcdef".toCharArray();
-    static String hexString(byte[] bytes) {
-        StringBuilder hex = new StringBuilder(2 * bytes.length);
-        for (byte b : bytes) {
-            hex.append(HEXES[((b & 0xF0) >> 4)])
-                    .append(HEXES[(b & 0x0F)]);
+    private static final char[] HEX_CHARS = new char[]{
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'a', 'b', 'c', 'd', 'e', 'f'
+    };
+
+    public static String hexString(byte[] array) {
+        char[] chars = new char[array.length * 2];
+        int pos = 0;
+        for (int i=0; i< array.length; i++) {
+            int v1 = array[i] >>> 4 & 0x0f;
+            int v2 = array[i] & 0x0f;
+            chars[pos++] = HEX_CHARS[v1];
+            chars[pos++] = HEX_CHARS[v2];
         }
-        return hex.toString();
+        return new String(chars);
+    }
+
+    public static byte[] hexStringtoByteArray(String str) {
+        int sLen = str.length();
+        if ((sLen & 0x01) != 0) {
+            throw new NumberFormatException();
+        }
+        byte ret[] = new byte[sLen / 2];
+        for (int i = 0; i < sLen; i+=2) {
+            ret[i/2] = (byte) ((Character.digit(str.charAt(i), 16) << 4) +
+                     Character.digit(str.charAt(i+1), 16));
+        }
+        return ret;
     }
 
     static long computeSize(InputStream inputStream)
