@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
 
 import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
@@ -57,6 +58,9 @@ public class VerifyCopyCommandTest {
     @Mock
     private SetFixity mockFixityFilter;
     
+    @Mock
+    private Logger mockLogger;
+    
     private IdSpec mockIds = new IdSpec(TEST_PID);
     
     private NonMutatingFilter<FedoraObject> mockFilter =
@@ -76,7 +80,7 @@ public class VerifyCopyCommandTest {
     @Before
     public void setUp() {
         testCommand = new VerifyCopyCommand(mockSource, mockDestination,
-                mockIds, mockFilter, mockFixityFilter);
+                mockIds, mockFilter, mockFixityFilter, mockLogger);
     }
     
     @After
@@ -109,6 +113,8 @@ public class VerifyCopyCommandTest {
         testCommand.execute();
         verify(mockSource).getObject(TEST_PID);
         verify(mockDestination).getObject(TEST_PID);
+        verify(mockLogger, times(0)).warn(any(String.class));
+        verify(mockLogger, times(0)).error(any(String.class));
     }
     
     @Test
@@ -141,6 +147,7 @@ public class VerifyCopyCommandTest {
         testCommand.execute();
         verify(mockSource).getObject(TEST_PID);
         verify(mockDestination).getObject(TEST_PID);
+        verify(mockLogger).error(any(String.class));
     }
     
     private static SortedMap<String, Datastream> sortedSingleton(

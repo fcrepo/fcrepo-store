@@ -15,8 +15,11 @@ import java.io.IOException;
  */
 public abstract class FilteringBatchObjectCommand
         extends BatchObjectCommand {
-    private static final Logger logger =
-            LoggerFactory.getLogger(FilteringBatchObjectCommand.class);
+
+    // because the non-mutating commands only do reporting, we use a
+    // non-static logger to facilitate testing
+    protected final Logger logger;
+
     protected final Filter<FedoraObject> filter;
 
     protected final CommandContext factoryContext;
@@ -29,10 +32,20 @@ public abstract class FilteringBatchObjectCommand
     protected FilteringBatchObjectCommand(
             FedoraStoreSession source, FedoraStoreSession destination,
             IdSpec pids, Filter<FedoraObject> filter) {
+        this(source, destination, pids, filter,
+                LoggerFactory.getLogger(FilteringBatchObjectCommand.class));
+    
+    }
+    
+    protected FilteringBatchObjectCommand(
+            FedoraStoreSession source, FedoraStoreSession destination,
+            IdSpec pids, Filter<FedoraObject> filter,
+            Logger logger) {
         super(source, pids);
         this.filter = filter;
         this.factoryContext =
                 CommandContext.nonModifiableContext(source, destination, null);
+        this.logger = logger;
     }
 
     @Override

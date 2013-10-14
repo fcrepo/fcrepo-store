@@ -18,8 +18,6 @@ import com.github.cwilper.fcrepo.store.util.filters.ds.SetFixity;
 
 
 public class VerifyCopyCommand extends FilteringBatchObjectCommand {
-
-    private static final Logger logger = LoggerFactory.getLogger(VerifyCopyCommand.class);
     
     private final SetFixity m_fixityFilter;
         
@@ -27,10 +25,18 @@ public class VerifyCopyCommand extends FilteringBatchObjectCommand {
             FedoraStoreSession source, FedoraStoreSession destination,
             IdSpec pids, NonMutatingFilter<FedoraObject> filter,
             SetFixity fixityFilter) {
-        super(source, destination, pids, filter);
+        this(source, destination, pids, filter, fixityFilter,
+                LoggerFactory.getLogger(VerifyCopyCommand.class));
+    }
+
+    public VerifyCopyCommand(
+            FedoraStoreSession source, FedoraStoreSession destination,
+            IdSpec pids, NonMutatingFilter<FedoraObject> filter,
+            SetFixity fixityFilter, Logger logger) {
+        super(source, destination, pids, filter, logger);
         m_fixityFilter = fixityFilter;
     }
-    
+
     @Override
     protected void handleFilteredObject(FedoraObject object) {
         FedoraObject destinationObject;
@@ -70,10 +76,17 @@ public class VerifyCopyCommand extends FilteringBatchObjectCommand {
             }
             DatastreamVersion lastLeft = left.versions().last();
             DatastreamVersion lastRight = right.versions().last();
+
             if (lastRight.createdDate().compareTo(lastLeft.createdDate()) != 0) {
                 logger.warn("Last creation dates do not match for source and destination "
                     + object.pid() + " " + left.id());
+                for (DatastreamVersion version: right.versions()) {
+                    if (version.createdDate().equals(lastLeft.createdDate())){
+                        lastRight = version;
+                    }
+                }
             }
+            
             long leftSize = lastLeft.size();
             long rightSize = lastRight.size();
             if ( leftSize != rightSize) {
