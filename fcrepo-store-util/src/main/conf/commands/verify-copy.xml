@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
-       default-lazy-init="true">
-  <description><![CDATA[
+	default-lazy-init="true">
+	<description><![CDATA[
     Command: verify-copy
 
     Purpose:
@@ -36,17 +36,25 @@
 
         > fcsu verify-copy legacy akubra --pids=demo:Obj1,demo:Obj2
   ]]>
-  </description>
-  <bean id="copy"
-      class="com.github.cwilper.fcrepo.store.util.commands.CopyCommand">
-    <constructor-arg ref="${arg1}"/>
-    <constructor-arg ref="${arg2}"/>
-    <constructor-arg>
-      <bean class="com.github.cwilper.fcrepo.store.util.IdSpec">
-        <constructor-arg value="${pids}"/>
-      </bean>
-    </constructor-arg>
-    <constructor-arg ref="${filter}"/>
-    <constructor-arg ref="set-fixity"/>
-  </bean>
+	</description>
+	<bean id="verify-copy"
+		class="com.github.cwilper.fcrepo.store.util.commands.VerifyCopyCommand">
+		<constructor-arg ref="${arg1}" />
+		<constructor-arg ref="${arg2}" />
+		<constructor-arg>
+			<bean class="com.github.cwilper.fcrepo.store.util.IdSpec">
+				<constructor-arg value="${pids}" />
+			</bean>
+		</constructor-arg>
+		<constructor-arg ref="${filter}" />
+		<constructor-arg>
+			<bean class="com.github.cwilper.fcrepo.store.util.filters.ds.SetFixity">
+				<constructor-arg type="boolean" value="${all-datastream-versions}" />
+				<constructor-arg ref="contentResolver" />
+				<constructor-arg value="${algorithm}" />
+				<constructor-arg value="${force}" />
+				<constructor-arg value="${local.fedora.server}" />
+			</bean>
+		</constructor-arg>
+	</bean>
 </beans>

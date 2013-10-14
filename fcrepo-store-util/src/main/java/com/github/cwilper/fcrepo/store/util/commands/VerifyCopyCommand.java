@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.DatastreamVersion;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
+import com.github.cwilper.fcrepo.store.core.FedoraStore;
 import com.github.cwilper.fcrepo.store.core.FedoraStoreSession;
 import com.github.cwilper.fcrepo.store.core.NotFoundException;
 import com.github.cwilper.fcrepo.store.util.IdSpec;
@@ -20,6 +21,15 @@ import com.github.cwilper.fcrepo.store.util.filters.ds.SetFixity;
 public class VerifyCopyCommand extends FilteringBatchObjectCommand {
     
     private final SetFixity m_fixityFilter;
+    
+    private final CommandContext m_destFactoryContext;
+    
+    public VerifyCopyCommand(FedoraStore source, FedoraStore destination,
+            IdSpec pids, NonMutatingFilter<FedoraObject> filter,
+            SetFixity fixityFilter) {
+        this(source.getSession(), destination.getSession(),
+                pids, filter, fixityFilter);
+    }
         
     public VerifyCopyCommand(
             FedoraStoreSession source, FedoraStoreSession destination,
@@ -35,6 +45,7 @@ public class VerifyCopyCommand extends FilteringBatchObjectCommand {
             SetFixity fixityFilter, Logger logger) {
         super(source, destination, pids, filter, logger);
         m_fixityFilter = fixityFilter;
+        m_destFactoryContext = CommandContext.nonModifiableContext(destination, destination, null);
     }
 
     @Override
@@ -68,7 +79,7 @@ public class VerifyCopyCommand extends FilteringBatchObjectCommand {
                     continue;
                 }
                 right = m_fixityFilter.accept(right,
-                        factoryContext.copyFor(object));
+                        m_destFactoryContext.copyFor(object));
             } catch (IOException e) {
                 logger.error("Could not read source and/or destination datastream contents" +
                              " for " + object.pid() + " " + entry.getKey(), e);
