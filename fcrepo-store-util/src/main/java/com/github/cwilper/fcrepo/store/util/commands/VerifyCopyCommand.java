@@ -7,6 +7,7 @@ import java.util.SortedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.cwilper.fcrepo.dto.core.ControlGroup;
 import com.github.cwilper.fcrepo.dto.core.Datastream;
 import com.github.cwilper.fcrepo.dto.core.DatastreamVersion;
 import com.github.cwilper.fcrepo.dto.core.FedoraObject;
@@ -70,6 +71,10 @@ public class VerifyCopyCommand extends FilteringBatchObjectCommand {
         for (Entry<String, Datastream> entry: srcDatastreams.entrySet()) {
             Datastream left;
             Datastream right;
+            if (!ControlGroup.MANAGED.equals(entry.getValue().controlGroup())
+                    && !ControlGroup.INLINE_XML.equals(entry.getValue().controlGroup())) {
+                continue;
+            }
             try {
                 left = m_fixityFilter.accept(entry.getValue(),
                         factoryContext.copyFor(object));
