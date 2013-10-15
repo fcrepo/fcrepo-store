@@ -24,5 +24,10 @@ public class MockDatastream extends Datastream {
     public void newVersion(Date date, byte[] content) {
         
     }
+    
+    @Override
+    public ControlGroup controlGroup() {
+        return ControlGroup.MANAGED;
+    }
 
 }
