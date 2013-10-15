@@ -52,10 +52,12 @@ public interface FileStore
     void deleteFile(String path);
 
     /**
-     * Iterates the paths of all fiels in this store and adds the id, path
+     * Iterates the paths of all files in this store and adds the id, path
      * pairs to the registry.
      *
      * @throws StoreException if any problem occurs.
      */
     void populateRegistry();
+    
+    void setPath(String id, String path);
 }

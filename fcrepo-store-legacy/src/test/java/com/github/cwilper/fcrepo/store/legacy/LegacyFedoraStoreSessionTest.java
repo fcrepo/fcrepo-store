@@ -35,12 +35,13 @@ public class LegacyFedoraStoreSessionTest {
     private LegacyFedoraStoreSession fedoraSession;
     private FileStore testObjectStore;
     private FileStore testContentStore;
+    private PathAlgorithm testAlgorithm;
     
     @Before
     public void setUp() {
-        PathAlgorithm alg = new TimestampPathAlgorithm();
-        testObjectStore = new MemoryFileStore(new MemoryPathRegistry(), alg);
-        testContentStore = new MemoryFileStore(new MemoryPathRegistry(), alg);
+        testAlgorithm = new TimestampPathAlgorithm();
+        testObjectStore = new MemoryFileStore(new MemoryPathRegistry(), testAlgorithm);
+        testContentStore = new MemoryFileStore(new MemoryPathRegistry(), testAlgorithm);
         fedoraSession = new LegacyFedoraStoreSession(testObjectStore,
                 testContentStore, new FOXMLReader(), new FOXMLWriter());
     }
@@ -94,7 +95,7 @@ public class LegacyFedoraStoreSessionTest {
 
     @Test (expected=ExistsException.class)
     public void addObjectExisting() throws Exception {
-        testObjectStore.setPath(EXISTING_PID, EXISTING_PATH);
+        testObjectStore.setPath(EXISTING_PID, EXISTING_PATH, testAlgorithm);
         OutputStream out = testObjectStore.getFileOutputStream(EXISTING_PATH);
         out.write(0);
         out.close();
@@ -472,7 +473,7 @@ public class LegacyFedoraStoreSessionTest {
             throws IOException {
         if (create) {
             String path = fileStore.generatePath(id);
-            fileStore.setPath(id, path);
+            fileStore.setPath(id, path, testAlgorithm);
             OutputStream out = fileStore.getFileOutputStream(path);
             out.write(0);
             out.close();

@@ -29,7 +29,8 @@ public interface PathRegistry {
      *
      * @param id the pid or pid "+" datastreamId "+" datastreamVersionId.
      * @param path the path or <code>null</code> to delete the mapping.
+     * @param pathAlg the algorithm that allows checking the date for comparison
      * @throws StoreException if any problem occurs.
      */
-    void setPath(String id, String path);
+    void setPath(String id, String path, PathAlgorithm pathAlg);
 }

@@ -1,5 +1,7 @@
 package com.github.cwilper.fcrepo.store.legacy;
 
+import java.util.GregorianCalendar;
+
 /**
  * Base implementation of {@link FileStore}.
  */
@@ -30,8 +32,12 @@ abstract class AbstractFileStore implements FileStore {
     }
 
     @Override
+    public void setPath(String id, String path, PathAlgorithm pathAlg) {
+        pathRegistry.setPath(id, path, pathAlg);
+    }
+    
     public void setPath(String id, String path) {
-        pathRegistry.setPath(id, path);
+        setPath(id, path, pathAlgorithm);
     }
 
     @Override
@@ -42,5 +48,10 @@ abstract class AbstractFileStore implements FileStore {
     @Override
     public String getId(String path) {
         return pathAlgorithm.getId(path);
+    }
+    
+    @Override
+    public GregorianCalendar dateOf(String path) {
+        return pathAlgorithm.dateOf(path);
     }
 }

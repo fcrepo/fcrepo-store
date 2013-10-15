@@ -1,5 +1,6 @@
 package com.github.cwilper.fcrepo.store.legacy;
 
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,11 +29,21 @@ public class MemoryPathRegistry implements PathRegistry {
     }
 
     @Override
-    public void setPath(String id, String path) {
+    public void setPath(String id, String path, PathAlgorithm alg) {
         if (path == null) {
             map.remove(path);
         } else {
-            map.put(id, path);
+            String oldPath = map.get(id);
+            if (oldPath != null) {
+                GregorianCalendar oc = alg.dateOf(oldPath);
+                GregorianCalendar nc = alg.dateOf(path);
+                if (oc != null && nc != null &&
+                        nc.compareTo(oc) > 0) {
+                    map.put(id, path);
+                }
+            } else {
+                map.put(id, path);
+            }
         }
     }
 }

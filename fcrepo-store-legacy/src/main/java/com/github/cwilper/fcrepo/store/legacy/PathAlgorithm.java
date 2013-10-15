@@ -1,5 +1,7 @@
 package com.github.cwilper.fcrepo.store.legacy;
 
+import java.util.GregorianCalendar;
+
 /**
  * Allocates relative paths for storing objects and managed datastreams.
  */
@@ -19,4 +21,6 @@ public interface PathAlgorithm {
      * @return the original pid or pid "+" datastreamId "+" datastreamVersionId
      */
     String getId(String path);
+    
+    GregorianCalendar dateOf(String path);
 }

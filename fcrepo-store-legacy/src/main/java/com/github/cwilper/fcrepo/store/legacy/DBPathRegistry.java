@@ -4,6 +4,7 @@ import com.github.cwilper.fcrepo.store.core.StoreException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -106,16 +107,21 @@ public class DBPathRegistry implements PathRegistry {
     }
 
     @Override
-    public void setPath(String id, String path) {
-        boolean exists = getPath(id) != null;
+    public void setPath(String id, String path, PathAlgorithm alg) {
+        String existing = getPath(id);
+        boolean exists = existing != null;
         try {
             if (!exists && path != null) {
                 db.update(insert_path_sql,
                         id, path);
             } else if (exists) {
                 if (path != null) {
-                    db.update(update_path_sql,
+                    GregorianCalendar oc = alg.dateOf(existing);
+                    GregorianCalendar nc = alg.dateOf(path);
+                    if (nc != null && oc != null && nc.compareTo(oc) > 0) {
+                        db.update(update_path_sql,
                             path, id);
+                    }
                 } else {
                     db.update(delete_by_id_sql,
                             id);

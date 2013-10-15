@@ -19,6 +19,43 @@ public class TimestampPathAlgorithm implements PathAlgorithm {
         return decode(path.substring(path.lastIndexOf("/") + 1));
     }
     
+    @Override
+    public GregorianCalendar dateOf(String path) {
+        String [] segs = path.split("\\/");
+        if (segs.length < 6) {
+            return null;
+        }
+
+        GregorianCalendar cal = new GregorianCalendar();
+        for (int i = 0; i < 5; i++) {
+            try {
+                int dateSeg = Integer.parseInt(segs[i]);
+                switch(i) {
+                    case 0:
+                        cal.set(Calendar.YEAR, dateSeg);
+                        break;
+                    case 1:
+                        cal.set(Calendar.MONTH, dateSeg);
+                        break;
+                    case 2:
+                        cal.set(Calendar.DAY_OF_MONTH, dateSeg);
+                        break;
+                    case 3:
+                        cal.set(Calendar.HOUR_OF_DAY, dateSeg);
+                        break;
+                    case 4:
+                        cal.set(Calendar.MINUTE, dateSeg);
+                        break;
+                    default:
+                        break;
+                }
+            } catch (NumberFormatException t) {
+                return null;
+            }
+        }
+        return cal;
+    }
+    
     private static String dateBasedPath(GregorianCalendar date) {
         return date.get(Calendar.YEAR) + "/"
                 + pad(2, date.get(Calendar.MONTH))
